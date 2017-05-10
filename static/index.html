@@ -3,8 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <title></title>
+    <script src="https://a.oxm1.cc/js/jquery.js"></script>
+
+    <link href="js/jquery-treeview/jquery.treeview.css" type="text/css" rel="stylesheet"/>
+    <link href="css/main.css" type="text/css" rel="stylesheet"/>
+    <script src="js/jquery-treeview/jquery.treeview.js"></script>
+    <script src="js/jquery-treeview/jquery.treeview.edit.js"></script>
+    <script src="js/jquery.treeview.async.rw.js"></script>
 </head>
 <body>
     <h1>Printer</h1>
+    Root Dir:<input type="text" id="rootdir" size="40" value="/Users/wurui/Downloads"/>
+
+    <ul id="navigation" class="filetree treeview-famfamfam treeview"></ul>
+<script>
+    var printRecord=(localStorage.getItem('printRecord')||'').split(',');
+    $(function () {
+        $("#navigation").treeview({
+            url: "/ajax/readdir",
+            root:$('#rootdir').val(),
+            toggle:function(e,r){
+                console.log(e,r)
+            },
+            checkClass:function(node,data){
+
+                if(!data.hasChildren && /^SMCT/.test(data.text)){
+                    //this.classes+=' smctdir';
+                    node.addClass("smctdir");
+                }
+                if(printRecord.indexOf(data.id)>-1){
+                    node.addClass('smct-printed')
+                }
+            }
+            //collapsed: true
+            //unique: true
+        }).on('click','.smctdir',function(e){
+           // console.log('smctdir clicked');
+           // console.log(e.target.id,this.id);
+            var $node=$(this);
+            var printed=$node.hasClass('smct-printed');
+            var dir=this.id;
+            if(confirm('确认打印如下目录\n'+dir+'\n中的任务?')){
+                $.getJSON('/ajax/printdir',{dir:dir},function(r){
+                    //console.log(r);
+                    if(!printed) {
+                        printRecord.push(dir);
+                        $node.addClass('smct-printed')
+                        localStorage.setItem('printRecord', printRecord.toString())
+                    }
+                })
+
+            }
+        });
+    });
+</script>
 </body>
 </html>

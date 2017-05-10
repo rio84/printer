@@ -1,0 +1,14 @@
+.smctdir{
+    color:#0066bb;
+    font-weight: 700;
+    cursor: pointer;
+}
+.smct-printed:after{
+    content: '(已打印)';
+    font-size:12px;
+    font-weight: 400;
+    color:#333333;
+}
+ul.filetree span.folder, ul.filetree span.file{
+    display: inline-block;
+}
